@@ -1,0 +1,15 @@
+import{s as u}from"./main-DX9-Gp6c.js";async function y(){try{const{data:t,error:o}=await u.from("packages").select("*").eq("status","Active").order("price",{ascending:!0});if(o)throw o;const a=document.getElementById("packages-grid");if(a.innerHTML="",t.length===0){a.innerHTML='<p style="text-align: center; width: 100%; color: var(--text-secondary);">No packages available right now.</p>';return}t.forEach(e=>{const r=e.highlight,i=r?"background: var(--accent-green-dark); color: white; padding: 2.5rem; border-radius: 4px; text-align: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1);":"border: 1px solid var(--border-color); padding: 2.5rem; border-radius: 4px; text-align: center;",n=r?"color: rgba(255,255,255,0.8);":"color: var(--text-secondary);",s=r?"color: white;":"color: var(--accent-gold);",c=r?"color: rgba(255,255,255,0.9);":"color: var(--text-secondary);",d=r?"btn-primary":"btn-secondary",m=r?"border-bottom: 1px solid rgba(255,255,255,0.2);":"border-bottom: 1px solid var(--border-color);",p=r?'<div style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); background: var(--accent-gold); color: white; padding: 0.25rem 1rem; border-radius: 20px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Most Popular</div>':"";let l="";e.features&&Array.isArray(e.features)&&(l=e.features.map(b=>`<li>✓ ${b}</li>`).join(""));const g=`
+                        <div class="package-card ${r?"popular":""}" style="${i}">
+                            ${p}
+                            ${e.image_url?`<img src="${e.image_url}" alt="${e.name}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin-bottom: 1rem; border: 2px solid ${r?"rgba(255,255,255,0.2)":"var(--border-color)"};">`:""}
+                            <h3 style="${n} font-size: 1.25rem;">${e.name}</h3>
+                            <h4 style="font-size: 2.5rem; margin: 1rem 0; ${s}">₹${e.price}</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 2rem; ${m} padding-bottom: 1rem; ${n}">
+                                Our highly requested ${e.name} package.
+                            </p>
+                            <ul style="margin: 1.5rem 0; ${c} display: flex; flex-direction: column; gap: 0.8rem; text-align: left; padding: 0; list-style: none;">
+                                ${l}
+                            </ul>
+                            <a href="/booking.html?package=${encodeURIComponent(e.name)}" class="btn ${d}" style="width: 100%;">Select ${e.name}</a>
+                        </div>
+                    `;a.innerHTML+=g})}catch(t){console.error("Error fetching packages:",t),document.getElementById("packages-grid").innerHTML='<p style="text-align: center; width: 100%; color: red;">Failed to load packages. Please try again later.</p>'}}document.addEventListener("DOMContentLoaded",()=>{y(),document.querySelectorAll(".faq-question").forEach(t=>{t.addEventListener("click",()=>{const o=t.nextElementSibling,a=t.querySelector("span");o.style.display==="block"?(o.style.display="none",a.textContent="+"):(o.style.display="block",a.textContent="−")})})});

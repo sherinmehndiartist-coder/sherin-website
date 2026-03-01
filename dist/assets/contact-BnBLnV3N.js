@@ -1,0 +1,5 @@
+import{s as i}from"./main-DX9-Gp6c.js";document.getElementById("contact-form").addEventListener("submit",async s=>{s.preventDefault();const e=document.getElementById("form-status");e.style.display="block",e.textContent="Sending...",e.style.color="var(--text-secondary)";const n=document.getElementById("contact_name").value.trim(),o=document.getElementById("contact_email").value.trim(),a=document.getElementById("contact_msg").value.trim();if(!n||!o||!a){e.textContent="Please fill out all required fields.",e.style.color="red";return}try{const{error:t}=await i.from("inquiries").insert([{name:n,contact_info:o,message:a}]);if(t)throw new Error(t.message||"Database insert failed.");const r=`Hi Sherin Mehndi! I have an inquiry:
+
+Name: ${n}
+Phone/Email: ${o}
+Message: ${a}`,c=`https://wa.me/919150509749?text=${encodeURIComponent(r)}`;e.textContent="Message sent! Redirecting to WhatsApp...",e.style.color="var(--accent-green)",setTimeout(()=>{window.open(c,"_blank"),document.getElementById("contact-form").reset(),e.style.display="none"},1500)}catch(t){console.error("Submission Error:",t),e.textContent=`Error: ${t.message}. Please try again later.`,e.style.color="red"}});

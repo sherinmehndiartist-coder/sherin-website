@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Sherin Mehndi</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #dashboard-wrapper {
+            display: none;
+            width: 100%;
+        }
+
+        #login-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--bg-dark), var(--text-primary));
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--text-primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+        }
+
+        .sidebar h2 {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #d1d5db;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .content-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--accent-gold);
+            cursor: pointer;
+            text-decoration: underline;
+            margin-right: 0.5rem;
+        }
+
+        .action-btn.delete {
+            color: #dc2626;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .img-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .grid-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            #dashboard-wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 75%;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                transition: opacity 0.3s ease;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .mobile-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: var(--text-primary);
+                color: white;
+                padding: 1rem;
+                position: sticky;
+                top: 0;
+                z-index: 900;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .content-panel {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav {
+                display: none;
+            }
+
+            .mobile-overlay {
+                display: none;
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/admin-DHJ8FWB0.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/main-DX9-Gp6c.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-BkKVWN2K.css">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-wrapper">
+        <div class="login-box">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="1.5"
+                style="margin-bottom: 1rem;">
+                <path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2z"></path>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+            </svg>
+            <h2>Admin Login</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">Secure access to Sherin
+                Mehndi dashboard</p>
+            <form id="login-form">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address</label>
+                    <input type="email" id="login_email" placeholder="admin@example.com" required
+                        style="width: 100%; padding: 0.85rem; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="text-align: left; margin-bottom: 0.5rem;">
+                    <label>Password</label>
+                    <input type="password" id="login_password" required
+                        style="width: 100%; padding: 0.85rem; box-sizing: border-box;" />
+                </div>
+                <div style="text-align: right; margin-bottom: 1.5rem;">
+                    <a href="#" id="forgot-password-link"
+                        style="color: var(--text-secondary); font-size: 0.85rem; text-decoration: underline;">Forgot
+                        password?</a>
+                </div>
+                <div class="form-group">
+                    <div id="login-error"
+                        style="color: #dc2626; font-size: 0.85rem; margin-bottom: 1rem; display: none;">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn"
+                    style="width: 100%; padding: 0.85rem; justify-content: center;">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Wrapper -->
+    <div id="dashboard-wrapper">
+        <!-- Mobile Navigation Bar -->
+        <div class="mobile-nav">
+            <div style="font-family: var(--font-heading); color: var(--accent-gold); font-size: 1.25rem;">Sherin Mehndi
+                Admin</div>
+            <button id="mobile-menu-btn"
+                style="background: none; border: none; color: white; cursor: pointer; padding: 0.25rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Overlay for Sidebar -->
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+
+        <div class="sidebar">
+            <h2>Admin Panel</h2>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+                <button class="nav-btn" data-target="packages">Packages</button>
+                <button class="nav-btn" data-target="products">Products</button>
+                <button class="nav-btn" data-target="heroImages">Hero Images</button>
+                <button class="nav-btn" data-target="aboutSection">About Section</button>
+                <button class="nav-btn" data-target="gallery">Gallery</button>
+                <button class="nav-btn" data-target="testimonials">Testimonials</button>
+                <button class="nav-btn" data-target="bookings">Bookings</button>
+                <button class="nav-btn" data-target="orders">Orders</button>
+                <button class="nav-btn" data-target="contactMessages">Contact Messages</button>
+                <button class="nav-btn" id="logout-btn" style="margin-top: auto; color: #fca5a5;">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div>Admin Profile</div>
+            </div>
+
+            <!-- Dashboard Panel -->
+            <div id="dashboard" class="content-panel active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Bookings</div>
+                        <div class="stat-value" id="stat-bookings">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Pending Orders</div>
+                        <div class="stat-value" id="stat-orders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Inquiries</div>
+                        <div class="stat-value" id="stat-inquiries">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Revenue</div>
+                        <div class="stat-value" id="stat-revenue">₹0</div>
+                    </div>
+                </div>
+                <h3>Recent Activity</h3>
+                <p style="color: var(--text-secondary);">Welcome to your admin panel. Click on the left tabs to manage
+                    business operations.</p>
+            </div>
+
+            <!-- Bookings Panel -->
+            <div id="bookings" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Manage Bookings</h3>
+                    <button class="btn btn-primary" id="refresh-bookings">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Package</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Orders Panel -->
+            <div id="orders" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Manage Orders</h3>
+                    <button class="btn btn-primary" id="refresh-orders">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Products Panel -->
+            <div id="products" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Products</h3>
+                    <button class="btn btn-primary" id="add-product-btn">+ Add Product</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Offer Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Packages Panel -->
+            <div id="packages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Packages</h3>
+                    <button class="btn btn-primary" id="add-package-btn">+ Add Package</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package Name</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Popularity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packages-tbody">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Hero Images Panel -->
+            <div id="heroImages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Hero Section Images</h3>
+                    <input type="file" id="hidden-hero-upload" accept="image/*" style="display: none;" />
+                    <button type="button" class="btn btn-primary" id="add-hero-btn">+ Upload Hero Image</button>
+                </div>
+                <div id="hero-images-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <!-- Images will load here -->
+                </div>
+            </div>
+
+            <!-- About Section Panel -->
+            <div id="aboutSection" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>About Section Content</h3>
+                    <button class="btn btn-primary" id="save-about-btn">Save Content</button>
+                </div>
+                <form id="about-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <label>About Text</label>
+                    <textarea rows="4" id="about_text" style="width:100%; padding:0.5rem;"></textarea>
+                    <label>Experience Text (e.g., 4+ Years Experience)</label>
+                    <input type="text" id="experience_text" style="width:100%; padding:0.5rem;" />
+                    <label>Journey Text (e.g., 60+ Bridal Clients)</label>
+                    <input type="text" id="journey_text" style="width:100%; padding:0.5rem;" />
+                    <label>Upload About Section Image (auto-converts to WebP)</label>
+                    <input type="file" id="about_image_file" accept="image/*" />
+                    <input type="hidden" id="about_image_url" />
+                    <div id="about_image_preview"></div>
+                </form>
+            </div>
+
+            <!-- Gallery Panel -->
+            <div id="gallery" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Gallery</h3>
+                    <input type="file" id="hidden-gallery-upload" accept="image/*" style="display: none;" />
+                    <button type="button" class="btn btn-primary" id="upload-gallery-btn">+ Upload Photo</button>
+                </div>
+                <div id="gallery-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                    <!-- Gallery images will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Testimonials Panel -->
+            <div id="testimonials" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Testimonials</h3>
+                    <button class="btn btn-primary" id="add-testimonial-btn">+ Add Review</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testimonials-tbody">
+                        <tr>
+                            <td colspan="4">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Contact Messages Panel (Previously Inquiries) -->
+            <div id="contactMessages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Contact Messages</h3>
+                    <button class="btn btn-primary" id="refresh-inquiries">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Message</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inquiries-tbody">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div> <!-- End Dashboard Wrapper -->
+
+
+    <!-- Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-product-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit Product
+            </h2>
+            <form id="product-form">
+                <input type="hidden" id="product_id" />
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="product_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <textarea id="product_desc" rows="3"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Normal Price (₹)</label>
+                        <input type="number" id="product_price" required min="1" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label>Offer Price (₹, Optional)</label>
+                        <input type="number" id="product_offer" min="1" step="0.01" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Stock / Inventory</label>
+                    <input type="number" id="product_stock" value="0" min="0" />
+                </div>
+                <div class="form-group">
+                    <label>Product Image Upload (auto-converts to WebP)</label>
+                    <input type="file" id="product_image_file" accept="image/*" />
+                    <input type="hidden" id="product_image" />
+                    <div id="product_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-product-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Package Modal -->
+    <div class="modal" id="package-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-package-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit Package
+            </h2>
+            <form id="package-form">
+                <input type="hidden" id="package_id" />
+                <div class="form-group">
+                    <label>Package Name</label>
+                    <input type="text" id="package_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="package_price" required min="1" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Features (comma separated)</label>
+                    <textarea id="package_features" rows="3" placeholder="Feature 1, Feature 2, Feature 3"
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="package_status" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="package_highlight" style="width:auto;" />
+                    <label style="margin-bottom:0;">Highlight as "Most Popular"?</label>
+                </div>
+                <div class="form-group">
+                    <label>Package Image Upload (auto-converts to WebP)</label>
+                    <input type="file" id="package_image_file" accept="image/*" />
+                    <input type="hidden" id="package_image" />
+                    <div id="package_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-package-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Package</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Testimonial Modal -->
+    <div class="modal" id="testimonial-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-testimonial-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit
+                Testimonial</h2>
+            <form id="testimonial-form">
+                <input type="hidden" id="testimonial_id" />
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="testimonial_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Rating (1-5)</label>
+                    <input type="number" id="testimonial_rating" required min="1" max="5" value="5" />
+                </div>
+                <div class="form-group">
+                    <label>Review Text</label>
+                    <textarea id="testimonial_review" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Client Photo (auto-converts to WebP)</label>
+                    <input type="file" id="testimonial_image_file" accept="image/*" />
+                    <input type="hidden" id="testimonial_image_url" />
+                    <div id="testimonial_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Video URL (Optional YouTube link)</label>
+                    <input type="url" id="testimonial_video" placeholder="https://youtube.com/..." />
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-testimonial-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Testimonial</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
