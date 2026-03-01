@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Sherin Mehndi</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link rel="stylesheet" href="/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #dashboard-wrapper {
+            display: none;
+            width: 100%;
+        }
+
+        #login-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--bg-dark), var(--text-primary));
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--text-primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+        }
+
+        .sidebar h2 {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #d1d5db;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .content-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--accent-gold);
+            cursor: pointer;
+            text-decoration: underline;
+            margin-right: 0.5rem;
+        }
+
+        .action-btn.delete {
+            color: #dc2626;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .img-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .grid-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            #dashboard-wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 75%;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                transition: opacity 0.3s ease;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .mobile-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: var(--text-primary);
+                color: white;
+                padding: 1rem;
+                position: sticky;
+                top: 0;
+                z-index: 900;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .content-panel {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav {
+                display: none;
+            }
+
+            .mobile-overlay {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-wrapper">
+        <div class="login-box">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="1.5"
+                style="margin-bottom: 1rem;">
+                <path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2z"></path>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+            </svg>
+            <h2>Admin Login</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">Secure access to Sherin
+                Mehndi dashboard</p>
+            <form id="login-form">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address</label>
+                    <input type="email" id="login_email" placeholder="admin@example.com" required
+                        style="width: 100%; padding: 0.85rem; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="text-align: left; margin-bottom: 0.5rem;">
+                    <label>Password</label>
+                    <input type="password" id="login_password" required
+                        style="width: 100%; padding: 0.85rem; box-sizing: border-box;" />
+                </div>
+                <div style="text-align: right; margin-bottom: 1.5rem;">
+                    <a href="#" id="forgot-password-link"
+                        style="color: var(--text-secondary); font-size: 0.85rem; text-decoration: underline;">Forgot
+                        password?</a>
+                </div>
+                <div class="form-group">
+                    <div id="login-error"
+                        style="color: #dc2626; font-size: 0.85rem; margin-bottom: 1rem; display: none;">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn"
+                    style="width: 100%; padding: 0.85rem; justify-content: center;">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Wrapper -->
+    <div id="dashboard-wrapper">
+        <!-- Mobile Navigation Bar -->
+        <div class="mobile-nav">
+            <div style="font-family: var(--font-heading); color: var(--accent-gold); font-size: 1.25rem;">Sherin Mehndi
+                Admin</div>
+            <button id="mobile-menu-btn"
+                style="background: none; border: none; color: white; cursor: pointer; padding: 0.25rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Overlay for Sidebar -->
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+
+        <div class="sidebar">
+            <h2>Admin Panel</h2>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+                <button class="nav-btn" data-target="packages">Packages</button>
+                <button class="nav-btn" data-target="products">Products</button>
+                <button class="nav-btn" data-target="heroImages">Hero Images</button>
+                <button class="nav-btn" data-target="aboutSection">About Section</button>
+                <button class="nav-btn" data-target="gallery">Gallery</button>
+                <button class="nav-btn" data-target="testimonials">Testimonials</button>
+                <button class="nav-btn" data-target="bookings">Bookings</button>
+                <button class="nav-btn" data-target="orders">Orders</button>
+                <button class="nav-btn" data-target="contactMessages">Contact Messages</button>
+                <button class="nav-btn" id="logout-btn" style="margin-top: auto; color: #fca5a5;">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div>Admin Profile</div>
+            </div>
+
+            <!-- Dashboard Panel -->
+            <div id="dashboard" class="content-panel active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Bookings</div>
+                        <div class="stat-value" id="stat-bookings">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Pending Orders</div>
+                        <div class="stat-value" id="stat-orders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Inquiries</div>
+                        <div class="stat-value" id="stat-inquiries">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Revenue</div>
+                        <div class="stat-value" id="stat-revenue">₹0</div>
+                    </div>
+                </div>
+                <h3>Recent Activity</h3>
+                <p style="color: var(--text-secondary);">Welcome to your admin panel. Click on the left tabs to manage
+                    business operations.</p>
+            </div>
+
+            <!-- Bookings Panel -->
+            <div id="bookings" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Manage Bookings</h3>
+                    <button class="btn btn-primary" id="refresh-bookings">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Package</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Orders Panel -->
+            <div id="orders" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Manage Orders</h3>
+                    <button class="btn btn-primary" id="refresh-orders">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Products Panel -->
+            <div id="products" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Products</h3>
+                    <button class="btn btn-primary" id="add-product-btn">+ Add Product</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Offer Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Packages Panel -->
+            <div id="packages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Packages</h3>
+                    <button class="btn btn-primary" id="add-package-btn">+ Add Package</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package Name</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Popularity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packages-tbody">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Hero Images Panel -->
+            <div id="heroImages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Hero Section Images</h3>
+                    <input type="file" id="hidden-hero-upload" accept="image/*" style="display: none;" />
+                    <button type="button" class="btn btn-primary" id="add-hero-btn">+ Upload Hero Image</button>
+                </div>
+                <div id="hero-images-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <!-- Images will load here -->
+                </div>
+            </div>
+
+            <!-- About Section Panel -->
+            <div id="aboutSection" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>About Section Content</h3>
+                    <button class="btn btn-primary" id="save-about-btn">Save Content</button>
+                </div>
+                <form id="about-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <label>About Text</label>
+                    <textarea rows="4" id="about_text" style="width:100%; padding:0.5rem;"></textarea>
+                    <label>Experience Text (e.g., 4+ Years Experience)</label>
+                    <input type="text" id="experience_text" style="width:100%; padding:0.5rem;" />
+                    <label>Journey Text (e.g., 60+ Bridal Clients)</label>
+                    <input type="text" id="journey_text" style="width:100%; padding:0.5rem;" />
+                    <label>Upload About Section Image (auto-converts to WebP)</label>
+                    <input type="file" id="about_image_file" accept="image/*" />
+                    <input type="hidden" id="about_image_url" />
+                    <div id="about_image_preview"></div>
+                </form>
+            </div>
+
+            <!-- Gallery Panel -->
+            <div id="gallery" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Gallery</h3>
+                    <input type="file" id="hidden-gallery-upload" accept="image/*" style="display: none;" />
+                    <button type="button" class="btn btn-primary" id="upload-gallery-btn">+ Upload Photo</button>
+                </div>
+                <div id="gallery-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                    <!-- Gallery images will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Testimonials Panel -->
+            <div id="testimonials" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h3>Manage Testimonials</h3>
+                    <button class="btn btn-primary" id="add-testimonial-btn">+ Add Review</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testimonials-tbody">
+                        <tr>
+                            <td colspan="4">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Contact Messages Panel (Previously Inquiries) -->
+            <div id="contactMessages" class="content-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Contact Messages</h3>
+                    <button class="btn btn-primary" id="refresh-inquiries">Refresh</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Message</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inquiries-tbody">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div> <!-- End Dashboard Wrapper -->
+
+    <script type="module" src="/main.js"></script>
+    <script type="module">
+        import { supabase } from '/main.js';
+
+        // --- Auth Logic ---
+        const loginWrapper = document.getElementById('login-wrapper');
+        const dashboardWrapper = document.getElementById('dashboard-wrapper');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                // User is already logged in
+                loginWrapper.style.display = 'none';
+                dashboardWrapper.style.display = 'flex';
+                // Trigger initial load since we are authenticated
+                loadStats();
+                loadBookings(); // Can call any defaults here
+            } else {
+                loginWrapper.style.display = 'flex';
+                dashboardWrapper.style.display = 'none';
+            }
+        }
+
+        checkSession();
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginBtn.textContent = 'Authenticating...';
+            loginBtn.disabled = true;
+            loginError.style.display = 'none';
+
+            const email = document.getElementById('login_email').value;
+            const password = document.getElementById('login_password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                loginError.textContent = error.message;
+                loginError.style.color = '#dc2626'; // Red for errors
+                loginError.style.display = 'block';
+                loginBtn.textContent = 'Sign In';
+                loginBtn.disabled = false;
+            } else {
+                loginWrapper.style.display = 'none';
+                dashboardWrapper.style.display = 'flex';
+                // Load data after successful login
+                loadStats();
+            }
+        });
+
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        forgotPasswordLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('login_email').value;
+            const email = prompt("Please enter your admin email address to send a password reset link:", emailInput);
+
+            if (!email) {
+                return;
+            }
+
+            loginBtn.textContent = 'Sending...';
+            loginBtn.disabled = true;
+            loginError.style.display = 'none';
+
+            const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/admin.html',
+            });
+
+            if (error) {
+                loginError.textContent = error.message;
+                loginError.style.color = '#dc2626';
+                loginError.style.display = 'block';
+            } else {
+                loginError.textContent = 'Password reset email sent! Check your inbox.';
+                loginError.style.color = 'var(--accent-green, #16a34a)';
+                loginError.style.display = 'block';
+            }
+
+            loginBtn.textContent = 'Sign In';
+            loginBtn.disabled = false;
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.reload();
+        });
+
+        // --- Image Conversion & Upload Logic ---
+        async function convertToWebP(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+                        canvas.toBlob((blob) => {
+                            if (!blob) return reject(new Error('Canvas is empty'));
+                            const newFileName = file.name.replace(/\.[^/.]+$/, "") + "-" + Date.now() + ".webp";
+                            resolve(new File([blob], newFileName, { type: "image/webp" }));
+                        }, "image/webp", 0.8);
+                    };
+                    img.onerror = error => reject(error);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function uploadImageFetchUrl(fileInput) {
+            if (!fileInput.files || fileInput.files.length === 0) return null;
+            const originalFile = fileInput.files[0];
+            try {
+                const webpFile = await convertToWebP(originalFile);
+                const { data, error } = await supabase.storage.from('images').upload('public/' + webpFile.name, webpFile);
+                if (error) {
+                    alert("Upload failed (ensure 'images' bucket exists and is public). Data URls will be used as a fallback. Error: " + error.message);
+                    // Fallback to base64
+                    return new Promise((r) => {
+                        const reader = new FileReader();
+                        reader.onload = e => r(e.target.result);
+                        reader.readAsDataURL(webpFile);
+                    });
+                }
+                const { data: publicUrlData } = supabase.storage.from('images').getPublicUrl(data.path);
+                return publicUrlData.publicUrl;
+            } catch (err) {
+                alert("Image conversion error: " + err.message);
+                return null;
+            }
+        }
+
+        // Navigation Logic
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const panels = document.querySelectorAll('.content-panel');
+        const pageTitle = document.getElementById('page-title');
+
+        // Mobile Sidebar Logic
+        const sidebar = document.querySelector('.sidebar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        if (mobileMenuBtn && mobileOverlay && sidebar) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                mobileOverlay.classList.add('active');
+            });
+
+            mobileOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+            });
+        }
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                navBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-target');
+
+                if (!targetId || targetId === 'logout') return;
+
+                panels.forEach(p => p.classList.remove('active'));
+                const targetPanel = document.getElementById(targetId);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+
+                if (pageTitle && btn.textContent !== 'Logout') {
+                    if (targetId === 'gallery') loadGallery();
+                    if (targetId === 'heroImages') loadHeroImages();
+
+                    // If mobile overlay is active, close sidebar
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open'); // Changed from 'active' to 'open' to match initial state
+                        mobileOverlay.classList.remove('active');
+                    }
+
+                    if (targetId === 'bookings') loadBookings();
+                    if (targetId === 'orders') loadOrders();
+                    if (targetId === 'products') loadProducts();
+                    if (targetId === 'packages') loadPackages();
+                    if (targetId === 'aboutSection') loadAbout();
+                    if (targetId === 'testimonials') loadTestimonials();
+                    if (targetId === 'inquiries') loadInquiries();
+                }
+            });
+        });
+
+        // Data Loaders
+        async function loadStats() {
+            // Basic counts
+            const resB = await supabase.from('bookings').select('id', { count: 'exact' });
+            if (resB.count) document.getElementById('stat-bookings').textContent = resB.count;
+
+            const resO = await supabase.from('orders').select('id', { count: 'exact' }).eq('status', 'pending');
+            if (resO.count) document.getElementById('stat-orders').textContent = resO.count;
+
+            const resI = await supabase.from('inquiries').select('id', { count: 'exact' });
+            if (resI.count) document.getElementById('stat-inquiries').textContent = resI.count;
+        }
+
+        async function loadBookings() {
+            const tbody = document.getElementById('bookings-tbody');
+            tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+            const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="6">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            data.forEach(b => {
+                tbody.innerHTML += `
+          <tr>
+            <td>${new Date(b.created_at).toLocaleDateString()}</td>
+            <td>${b.name}</td>
+            <td>${b.phone}</td>
+            <td><span style="text-transform:capitalize;">${b.package}</span></td>
+            <td>
+              <select style="padding:0.25rem; font-size:0.85rem; border-radius:4px; border:1px solid #ddd;" onchange="updateStatus('bookings', '${b.id}', this.value)">
+                <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="completed" ${b.status === 'completed' ? 'selected' : ''}>Completed</option>
+              </select>
+            </td>
+            <td>
+              <a href="https://wa.me/91${b.phone.replace(/\D/g, '')}" target="_blank" class="action-btn" style="color:#16a34a; text-decoration:none;">WhatsApp</a>
+              <a href="tel:${b.phone.replace(/\D/g, '')}" class="action-btn" style="color:#2563eb; text-decoration:none;">Call</a>
+              <button class="action-btn delete" onclick="deleteRecord('bookings', '${b.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        async function loadOrders() {
+            const tbody = document.getElementById('orders-tbody');
+            tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+            const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="6">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            data.forEach(o => {
+                tbody.innerHTML += `
+          <tr>
+            <td>${new Date(o.created_at).toLocaleDateString()}</td>
+            <td>${o.name}</td>
+            <td>${o.product_name}</td>
+            <td>${o.quantity}</td>
+            <td>
+              <select style="padding:0.25rem; font-size:0.85rem; border-radius:4px; border:1px solid #ddd;" onchange="updateStatus('orders', '${o.id}', this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+              </select>
+            </td>
+            <td>
+              ${o.phone ? `<a href="https://wa.me/91${o.phone.replace(/\D/g, '')}" target="_blank" class="action-btn" style="color:#16a34a; text-decoration:none;">WhatsApp</a> <a href="tel:${o.phone.replace(/\D/g, '')}" class="action-btn" style="color:#2563eb; text-decoration:none;">Call</a>` : ''}
+              <button class="action-btn delete" onclick="deleteRecord('orders', '${o.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        async function loadInquiries() {
+            const tbody = document.getElementById('inquiries-tbody');
+            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+            const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            data.forEach(i => {
+                tbody.innerHTML += `
+          <tr>
+            <td>${new Date(i.created_at).toLocaleDateString()}</td>
+            <td>${i.name}</td>
+            <td>${i.contact_info}</td>
+            <td style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${i.message}">${i.message}</td>
+            <td>
+              <a href="https://wa.me/91${i.contact_info.replace(/\D/g, '')}" target="_blank" class="action-btn" style="color:#16a34a; text-decoration:none;">WhatsApp</a>
+              <a href="tel:${i.contact_info.replace(/\D/g, '')}" class="action-btn" style="color:#2563eb; text-decoration:none;">Call</a>
+              <button class="action-btn delete" onclick="deleteRecord('inquiries', '${i.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        // --- Products Modal & Logic ---
+        const productModal = document.getElementById('product-modal');
+        const addProductBtn = document.getElementById('add-product-btn');
+        const closeProductModal = document.getElementById('close-product-modal');
+        const productForm = document.getElementById('product-form');
+
+        addProductBtn.addEventListener('click', () => {
+            productForm.reset();
+            document.getElementById('product_id').value = '';
+            document.getElementById('product_image_preview').innerHTML = '';
+            productModal.classList.add('active');
+        });
+
+        closeProductModal.addEventListener('click', () => {
+            productModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === productModal) {
+                productModal.classList.remove('active');
+            }
+        });
+
+        async function loadProducts() {
+            const tbody = document.getElementById('products-tbody');
+            tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+            const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="6">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No products found. Add one!</td></tr>';
+                return;
+            }
+            data.forEach(p => {
+                tbody.innerHTML += `
+          <tr>
+            <td><img src="${p.image_url || '/logo.svg'}" alt="${p.name}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #ddd;"></td>
+            <td>${p.name}</td>
+            <td>₹${p.price}</td>
+            <td>${p.offer_price ? '₹' + p.offer_price : '-'}</td>
+            <td>${p.stock}</td>
+            <td>
+              <button class="action-btn" onclick="editProduct('${p.id}')">Edit</button>
+              <button class="action-btn delete" onclick="deleteRecord('products', '${p.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        window.editProduct = async (id) => {
+            const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+            if (error) return alert("Error loading product: " + error.message);
+
+            document.getElementById('product_id').value = data.id;
+            document.getElementById('product_name').value = data.name;
+            document.getElementById('product_desc').value = data.description || '';
+            document.getElementById('product_price').value = data.price;
+            document.getElementById('product_offer').value = data.offer_price || '';
+            document.getElementById('product_stock').value = data.stock;
+            document.getElementById('product_image').value = data.image_url || '';
+            document.getElementById('product_image_preview').innerHTML = data.image_url ? `<img src="${data.image_url}" class="img-preview" />` : '';
+            document.getElementById('product_image_file').value = '';
+
+            productModal.classList.add('active');
+        };
+
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-product-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            const id = document.getElementById('product_id').value;
+
+            const fileInput = document.getElementById('product_image_file');
+            let finalImageUrl = document.getElementById('product_image').value;
+            if (fileInput.files && fileInput.files.length > 0) {
+                const uploadedUrl = await uploadImageFetchUrl(fileInput);
+                if (uploadedUrl) finalImageUrl = uploadedUrl;
+            }
+
+            const payload = {
+                name: document.getElementById('product_name').value,
+                description: document.getElementById('product_desc').value,
+                price: parseFloat(document.getElementById('product_price').value),
+                offer_price: document.getElementById('product_offer').value ? parseFloat(document.getElementById('product_offer').value) : null,
+                stock: parseInt(document.getElementById('product_stock').value),
+                image_url: finalImageUrl
+            };
+
+            let res;
+            if (id) {
+                // Update
+                res = await supabase.from('products').update(payload).eq('id', id);
+            } else {
+                // Insert
+                res = await supabase.from('products').insert([payload]);
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+
+            if (res && res.error) {
+                alert("Error saving: " + res.error.message);
+            } else {
+                productModal.classList.remove('active');
+                loadProducts();
+            }
+        });
+
+        // --- Packages Modal & Logic ---
+        const packageModal = document.getElementById('package-modal');
+        const addPackageBtn = document.getElementById('add-package-btn');
+        const closePackageModal = document.getElementById('close-package-modal');
+        const packageForm = document.getElementById('package-form');
+
+        addPackageBtn.addEventListener('click', () => {
+            packageForm.reset();
+            document.getElementById('package_id').value = '';
+            document.getElementById('package_image_preview').innerHTML = '';
+            packageModal.classList.add('active');
+        });
+
+        closePackageModal.addEventListener('click', () => {
+            packageModal.classList.remove('active');
+        });
+
+        async function loadPackages() {
+            const tbody = document.getElementById('packages-tbody');
+            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+            const { data, error } = await supabase.from('packages').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No packages found. Add one!</td></tr>';
+                return;
+            }
+            data.forEach(p => {
+                tbody.innerHTML += `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <img src="${p.image_url || '/logo.svg'}" alt="${p.name}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #ddd;">
+                <span>${p.name}</span>
+              </div>
+            </td>
+            <td>₹${p.price}</td>
+            <td><span class="status-badge status-${p.status === 'Active' ? 'completed' : 'pending'}">${p.status}</span></td>
+            <td>${p.highlight ? '★ Popular' : '-'}</td>
+            <td>
+              <button class="action-btn" onclick="editPackage('${p.id}')">Edit</button>
+              <button class="action-btn delete" onclick="deleteRecord('packages', '${p.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        window.editPackage = async (id) => {
+            const { data, error } = await supabase.from('packages').select('*').eq('id', id).single();
+            if (error) return alert("Error loading package: " + error.message);
+
+            document.getElementById('package_id').value = data.id;
+            document.getElementById('package_name').value = data.name;
+            document.getElementById('package_price').value = data.price;
+            document.getElementById('package_features').value = Array.isArray(data.features) ? data.features.join(', ') : '';
+            document.getElementById('package_status').value = data.status || 'Active';
+            document.getElementById('package_highlight').checked = !!data.highlight;
+
+            document.getElementById('package_image').value = data.image_url || '';
+            document.getElementById('package_image_preview').innerHTML = data.image_url ? `<img src="${data.image_url}" class="img-preview" />` : '';
+            document.getElementById('package_image_file').value = '';
+
+            packageModal.classList.add('active');
+        };
+
+        packageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-package-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            const id = document.getElementById('package_id').value;
+
+            const fileInput = document.getElementById('package_image_file');
+            let finalImageUrl = document.getElementById('package_image').value;
+            if (fileInput.files && fileInput.files.length > 0) {
+                const uploadedUrl = await uploadImageFetchUrl(fileInput);
+                if (uploadedUrl) finalImageUrl = uploadedUrl;
+            }
+
+            const featuresText = document.getElementById('package_features').value;
+            const featuresArray = featuresText.split(',').map(f => f.trim()).filter(f => f);
+
+            const payload = {
+                name: document.getElementById('package_name').value,
+                price: parseFloat(document.getElementById('package_price').value),
+                features: featuresArray,
+                status: document.getElementById('package_status').value,
+                highlight: document.getElementById('package_highlight').checked,
+                image_url: finalImageUrl
+            };
+
+            let res;
+            if (id) {
+                res = await supabase.from('packages').update(payload).eq('id', id);
+            } else {
+                res = await supabase.from('packages').insert([payload]);
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+
+            if (res && res.error) {
+                alert("Error saving package: " + res.error.message);
+            } else {
+                packageModal.classList.remove('active');
+                loadPackages();
+            }
+        });
+
+        // --- About Section Logic ---
+        async function loadAbout() {
+            const { data, error } = await supabase.from('about_content').select('*').limit(1).single();
+            if (data && !error) {
+                document.getElementById('about_text').value = data.about_text || '';
+                document.getElementById('experience_text').value = data.experience_text || '';
+                document.getElementById('journey_text').value = data.journey_text || '';
+                document.getElementById('about_image_url').value = data.image_url || '';
+                document.getElementById('about_image_preview').innerHTML = data.image_url ? `<img src="${data.image_url}" class="img-preview" />` : '';
+            }
+        }
+
+        document.getElementById('save-about-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-about-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            const fileInput = document.getElementById('about_image_file');
+            let finalImageUrl = document.getElementById('about_image_url').value;
+            if (fileInput.files && fileInput.files.length > 0) {
+                const uploadedUrl = await uploadImageFetchUrl(fileInput);
+                if (uploadedUrl) finalImageUrl = uploadedUrl;
+            }
+
+            const payload = {
+                about_text: document.getElementById('about_text').value,
+                experience_text: document.getElementById('experience_text').value,
+                journey_text: document.getElementById('journey_text').value,
+                image_url: finalImageUrl
+            };
+
+            const { data: existing } = await supabase.from('about_content').select('id').limit(1).single();
+            let res;
+            if (existing) {
+                res = await supabase.from('about_content').update(payload).eq('id', existing.id);
+            } else {
+                res = await supabase.from('about_content').insert([payload]);
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+
+            if (res && res.error) {
+                alert("Error saving about content: " + res.error.message);
+            } else {
+                alert("About content saved successfully!");
+            }
+        });
+
+        // --- Testimonials Modal & Logic ---
+        const testimonialModal = document.getElementById('testimonial-modal');
+        const addTestimonialBtn = document.getElementById('add-testimonial-btn');
+        const closeTestimonialModal = document.getElementById('close-testimonial-modal');
+        const testimonialForm = document.getElementById('testimonial-form');
+
+        addTestimonialBtn.addEventListener('click', () => {
+            testimonialForm.reset();
+            document.getElementById('testimonial_id').value = '';
+            document.getElementById('testimonial_image_preview').innerHTML = '';
+            testimonialModal.classList.add('active');
+        });
+
+        closeTestimonialModal.addEventListener('click', () => {
+            testimonialModal.classList.remove('active');
+        });
+
+        async function loadTestimonials() {
+            const tbody = document.getElementById('testimonials-tbody');
+            tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+            const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+            if (error) { tbody.innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`; return; }
+
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No testimonials found. Add one!</td></tr>';
+                return;
+            }
+            data.forEach(t => {
+                let ratingStars = '⭐'.repeat(t.rating);
+                tbody.innerHTML += `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <img src="${t.image_url || '/logo.svg'}" alt="${t.name}" style="width:40px; height:40px; object-fit:cover; border-radius:50%; border:1px solid #ddd;">
+                <span>${t.name}</span>
+              </div>
+            </td>
+            <td>${ratingStars}</td>
+            <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.review}</td>
+            <td>
+              <button class="action-btn" onclick="editTestimonial('${t.id}')">Edit</button>
+              <button class="action-btn delete" onclick="deleteRecord('testimonials', '${t.id}')">Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        window.editTestimonial = async (id) => {
+            const { data, error } = await supabase.from('testimonials').select('*').eq('id', id).single();
+            if (error) return alert("Error loading testimonial: " + error.message);
+
+            document.getElementById('testimonial_id').value = data.id;
+            document.getElementById('testimonial_name').value = data.name;
+            document.getElementById('testimonial_rating').value = data.rating;
+            document.getElementById('testimonial_review').value = data.review;
+            document.getElementById('testimonial_video').value = data.video_url || '';
+
+            document.getElementById('testimonial_image_url').value = data.image_url || '';
+            document.getElementById('testimonial_image_preview').innerHTML = data.image_url ? `<img src="${data.image_url}" class="img-preview" />` : '';
+            document.getElementById('testimonial_image_file').value = '';
+
+            testimonialModal.classList.add('active');
+        };
+
+        testimonialForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-testimonial-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            const id = document.getElementById('testimonial_id').value;
+
+            const fileInput = document.getElementById('testimonial_image_file');
+            let finalImageUrl = document.getElementById('testimonial_image_url').value;
+            if (fileInput.files && fileInput.files.length > 0) {
+                const uploadedUrl = await uploadImageFetchUrl(fileInput);
+                if (uploadedUrl) finalImageUrl = uploadedUrl;
+            }
+
+            const payload = {
+                name: document.getElementById('testimonial_name').value,
+                rating: parseInt(document.getElementById('testimonial_rating').value),
+                review: document.getElementById('testimonial_review').value,
+                video_url: document.getElementById('testimonial_video').value || null,
+                image_url: finalImageUrl
+            };
+
+            let res;
+            if (id) {
+                res = await supabase.from('testimonials').update(payload).eq('id', id);
+            } else {
+                res = await supabase.from('testimonials').insert([payload]);
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+
+            if (res && res.error) {
+                alert("Error saving testimonial: " + res.error.message);
+            } else {
+                testimonialModal.classList.remove('active');
+                loadTestimonials();
+            }
+        });
+
+        // --- Hero Images Logic ---
+        const addHeroBtn = document.getElementById('add-hero-btn');
+        const hiddenHeroUpload = document.getElementById('hidden-hero-upload');
+
+        async function loadHeroImages() {
+            const grid = document.getElementById('hero-images-grid');
+            grid.innerHTML = '<p>Loading heroes...</p>';
+            const { data, error } = await supabase.from('hero_images').select('*').order('created_at', { ascending: false });
+            if (error) { grid.innerHTML = `<p>Error: ${error.message}</p>`; return; }
+
+            grid.innerHTML = '';
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<p>No hero images found.</p>';
+                return;
+            }
+
+            data.forEach(img => {
+                grid.innerHTML += `
+                    <div style="position:relative; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
+                        <img src="${img.image_url}" style="width:100%; height:150px; object-fit:cover; display:block;" />
+                        <button onclick="deleteRecord('hero_images', '${img.id}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        addHeroBtn.addEventListener('click', () => {
+            hiddenHeroUpload.click();
+        });
+
+        hiddenHeroUpload.addEventListener('change', async (e) => {
+            if (!e.target.files || e.target.files.length === 0) return;
+
+            try {
+                const originalText = addHeroBtn.textContent;
+                addHeroBtn.textContent = 'Uploading...';
+                addHeroBtn.disabled = true;
+
+                const uploadedUrl = await uploadImageFetchUrl(e.target);
+                if (uploadedUrl) {
+                    const { error } = await supabase.from('hero_images').insert([{ image_url: uploadedUrl, active: true }]);
+                    if (error) throw error;
+                    alert('Hero image uploaded successfully!');
+                    loadHeroImages();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error uploading hero image: ' + err.message);
+            } finally {
+                addHeroBtn.textContent = '+ Upload Hero Image';
+                addHeroBtn.disabled = false;
+                hiddenHeroUpload.value = ''; // Reset input
+            }
+        });
+
+        // --- Gallery Logic ---
+        const uploadGalleryBtn = document.getElementById('upload-gallery-btn');
+        const hiddenGalleryUpload = document.getElementById('hidden-gallery-upload');
+
+        async function loadGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '<p>Loading gallery...</p>';
+            const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+            if (error) { grid.innerHTML = `<p>Error: ${error.message}</p>`; return; }
+
+            grid.innerHTML = '';
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<p>No gallery images found.</p>';
+                return;
+            }
+
+            data.forEach(item => {
+                grid.innerHTML += `
+                     <div style="position:relative; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
+                         <img src="${item.image_url}" style="width:100%; height:150px; object-fit:cover; display:block;" />
+                         <span style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.5); color:white; font-size:0.75rem; padding:2px 4px; border-radius:2px;">${item.category || 'Portfolio'}</span>
+                         <button onclick="deleteRecord('gallery', '${item.id}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Delete</button>
+                     </div>
+                 `;
+            });
+        }
+
+        uploadGalleryBtn.addEventListener('click', () => {
+            hiddenGalleryUpload.click();
+        });
+
+        hiddenGalleryUpload.addEventListener('change', async (e) => {
+            if (!e.target.files || e.target.files.length === 0) return;
+
+            try {
+                const originalText = uploadGalleryBtn.textContent;
+                uploadGalleryBtn.textContent = 'Uploading...';
+                uploadGalleryBtn.disabled = true;
+
+                const uploadedUrl = await uploadImageFetchUrl(e.target);
+                if (uploadedUrl) {
+                    // Prompt for an optional category assignment before inserting
+                    let cat = prompt('Enter a category (e.g., Bridal, Engagement) or leave empty for Portfolio:') || 'Portfolio';
+
+                    const { error } = await supabase.from('gallery').insert([{ image_url: uploadedUrl, category: cat }]);
+                    if (error) throw error;
+                    alert('Gallery image uploaded successfully!');
+                    loadGallery();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error uploading gallery image: ' + err.message);
+            } finally {
+                uploadGalleryBtn.textContent = '+ Upload Photo';
+                uploadGalleryBtn.disabled = false;
+                hiddenGalleryUpload.value = ''; // Reset input
+            }
+        });
+
+        // Global Functions for Actions
+        window.updateStatus = async (table, id, status) => {
+            const { error } = await supabase.from(table).update({ status }).eq('id', id);
+            if (!error) {
+                if (table === 'bookings') loadBookings();
+                if (table === 'orders') loadOrders();
+            }
+        };
+        window.deleteRecord = async (table, id) => {
+            if (confirm('Are you sure you want to delete this record?')) {
+                const { error } = await supabase.from(table).delete().eq('id', id);
+                if (!error) {
+                    if (table === 'bookings') loadBookings();
+                    if (table === 'orders') loadOrders();
+                    if (table === 'products') loadProducts();
+                    if (table === 'packages') loadPackages();
+                    if (table === 'testimonials') loadTestimonials();
+                    if (table === 'inquiries') loadInquiries();
+                    if (table === 'hero_images') loadHeroImages();
+                    if (table === 'gallery') loadGallery();
+                }
+            }
+        };
+
+        // Events
+        document.getElementById('refresh-bookings').addEventListener('click', loadBookings);
+        document.getElementById('refresh-orders').addEventListener('click', loadOrders);
+        document.getElementById('refresh-inquiries').addEventListener('click', loadInquiries);
+
+        // Initialization
+        // Removed global loadStats() from here since it moves into the auth callback
+    </script>
+
+    <!-- Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-product-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit Product
+            </h2>
+            <form id="product-form">
+                <input type="hidden" id="product_id" />
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="product_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <textarea id="product_desc" rows="3"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Normal Price (₹)</label>
+                        <input type="number" id="product_price" required min="1" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label>Offer Price (₹, Optional)</label>
+                        <input type="number" id="product_offer" min="1" step="0.01" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Stock / Inventory</label>
+                    <input type="number" id="product_stock" value="0" min="0" />
+                </div>
+                <div class="form-group">
+                    <label>Product Image Upload (auto-converts to WebP)</label>
+                    <input type="file" id="product_image_file" accept="image/*" />
+                    <input type="hidden" id="product_image" />
+                    <div id="product_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-product-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Package Modal -->
+    <div class="modal" id="package-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-package-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit Package
+            </h2>
+            <form id="package-form">
+                <input type="hidden" id="package_id" />
+                <div class="form-group">
+                    <label>Package Name</label>
+                    <input type="text" id="package_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="package_price" required min="1" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Features (comma separated)</label>
+                    <textarea id="package_features" rows="3" placeholder="Feature 1, Feature 2, Feature 3"
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="package_status" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="package_highlight" style="width:auto;" />
+                    <label style="margin-bottom:0;">Highlight as "Most Popular"?</label>
+                </div>
+                <div class="form-group">
+                    <label>Package Image Upload (auto-converts to WebP)</label>
+                    <input type="file" id="package_image_file" accept="image/*" />
+                    <input type="hidden" id="package_image" />
+                    <div id="package_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-package-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Package</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Testimonial Modal -->
+    <div class="modal" id="testimonial-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-testimonial-modal">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--accent-gold);">Edit
+                Testimonial</h2>
+            <form id="testimonial-form">
+                <input type="hidden" id="testimonial_id" />
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="testimonial_name" required />
+                </div>
+                <div class="form-group">
+                    <label>Rating (1-5)</label>
+                    <input type="number" id="testimonial_rating" required min="1" max="5" value="5" />
+                </div>
+                <div class="form-group">
+                    <label>Review Text</label>
+                    <textarea id="testimonial_review" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Client Photo (auto-converts to WebP)</label>
+                    <input type="file" id="testimonial_image_file" accept="image/*" />
+                    <input type="hidden" id="testimonial_image_url" />
+                    <div id="testimonial_image_preview" style="margin-top:0.5rem;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Video URL (Optional YouTube link)</label>
+                    <input type="url" id="testimonial_video" placeholder="https://youtube.com/..." />
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-testimonial-btn"
+                    style="width: 100%; margin-top: 1rem;">Save Testimonial</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

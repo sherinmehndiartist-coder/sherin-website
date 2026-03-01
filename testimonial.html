@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reviews & Testimonials | Sankarapuram Mehndi Artist</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <meta name="description"
+        content="Read testimonials from happy brides in Sankarapuram and Kallakurichi who booked Sherin for bridal makeup and organic mehndi designs." />
+    <link rel="stylesheet" href="/style.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        .star-rating {
+            color: var(--accent-gold);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-family: var(--font-heading);
+            font-size: 6rem;
+            color: var(--bg-secondary);
+            line-height: 1;
+            opacity: 0.5;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .client-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            /* 16:9 ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header scrolled" id="header" style="background-color: var(--white);">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <img src="/logo.svg" alt="Sherin Mehndi" style="height: 48px; width: auto;" />
+            </a>
+            <button class="menu-toggle" aria-label="Toggle menu" id="menu-toggle">
+                <span class="hamburger"></span>
+            </button>
+
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/about.html">About</a>
+                <a href="/packages.html">Packages</a>
+                <a href="/shop.html">Shop</a>
+                <a href="/gallery.html">Gallery</a>
+                <a href="/contact.html">Contact</a>
+                <a href="/booking.html" class="btn btn-primary" style="color: white; padding: 0.5rem 1.5rem;">Book
+                    Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header" style="background: var(--bg-secondary); padding: 12rem 0 6rem; text-align: center;">
+        <div class="container">
+            <span class="section-subtitle">Real Brides, Real Stories</span>
+            <h1>Client Love</h1>
+            <p style="max-width: 600px; margin: 0 auto;">Hear from our beautiful brides about their mehendi experience.
+            </p>
+        </div>
+    </section>
+
+    <!-- Video Testimonials -->
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2>Video Experiences</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+
+                <!-- Video 1 placeholder -->
+                <div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1" allowfullscreen></iframe>
+                    </div>
+                    <h3 style="margin-top: 1rem; font-size: 1.2rem;">Kritika & Rahul's Wedding</h3>
+                    <div class="star-rating">★★★★★</div>
+                </div>
+
+                <!-- Video 2 placeholder -->
+                <div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1" allowfullscreen></iframe>
+                    </div>
+                    <h3 style="margin-top: 1rem; font-size: 1.2rem;">Anjali's Destination Mehndi</h3>
+                    <div class="star-rating">★★★★★</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Written Testimonials -->
+    <section style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Written Words</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+                <div class="testimonial-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p style="color: var(--text-primary); position: relative; z-index: 1;">"Sherin's work is absolute
+                        perfection! The stain was incredibly dark and lasted almost two weeks. Everyone admired the
+                        custom portraits she drew for my big day."</p>
+                    <div class="client-info">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150"
+                            alt="Neha K." class="client-img" />
+                        <div>
+                            <h4 style="margin: 0;">Neha Kapoor</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Bridal Client</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p style="color: var(--text-primary); position: relative; z-index: 1;">"I have really sensitive skin
+                        so I was worried about chemical cones. Sherin's organic cones were so gentle, smelled amazing,
+                        and gave me a gorgeous mahogany stain."</p>
+                    <div class="client-info">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"
+                            alt="Snigdha M." class="client-img" />
+                        <div>
+                            <h4 style="margin: 0;">Snigdha M.</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Engagement Bride</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p style="color: var(--text-primary); position: relative; z-index: 1;">"Not just a mehendi artist,
+                        but a true professional. She arrived on time, was so quick, yet the detailing was immaculate.
+                        Simply the best in the city!"</p>
+                    <div class="client-info">
+                        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=150"
+                            alt="Rhea S." class="client-img" />
+                        <div>
+                            <h4 style="margin: 0;">Rhea Sharma</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Bridal Client</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="/" class="footer-logo">
+                        <img src="/logo.svg" alt="Sherin Mehndi"
+                            style="height: 60px; width: auto; filter: brightness(0) invert(1);" />
+                    </a>
+                    <p style="max-width: 320px; margin-bottom: 2rem; line-height: 1.6;">Premium bridal mehendi artistry
+                        and 100% organic henna products crafted with dedication and love.<br /><br />
+                        <strong>📍 Proudly Serving:</strong> Sankarapuram & Kallakurichi
+                    </p>
+                    <p class="footer-phone">📞 +91 9150509749</p>
+                </div>
+                <div class="footer-col footer-nav">
+                    <h4>Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="/packages.html">Packages</a></li>
+                        <li><a href="/shop.html">Shop</a></li>
+                        <li><a href="/gallery.html">Gallery</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col footer-action">
+                    <h4>Book Your Date</h4>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Secure your bridal mehendi session with us.
+                        Dates fill up fast.</p>
+                    <a href="/booking.html" class="btn btn-primary"
+                        style="margin-bottom: 2.5rem; display: inline-block;">Book Now</a>
+                    <div class="social-wrapper">
+                        <a href="#" class="social-icon" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Sherin Mehndi Artist. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+</body>
+
+</html>
