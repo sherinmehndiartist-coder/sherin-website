@@ -1381,7 +1381,7 @@
 
                 const uploadedUrl = await uploadImageFetchUrl(e.target);
                 if (uploadedUrl) {
-                    const { error } = await supabase.from('hero_images').insert([{ image_url: uploadedUrl, active: true }]);
+                    const { error } = await supabase.from('hero_images').insert([{ image_url: uploadedUrl, is_active: true }]);
                     if (error) throw error;
                     alert('Hero image uploaded successfully!');
                     loadHeroImages();

@@ -215,33 +215,91 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Sherin Mehndi Artist. All Rights Reserved.</p>
+                <p>&copy; 2026 Sherin Mehndi Artist. All Rights Reserved. | Designed by <a
+                        href="https://crevasolution.in" target="_blank"
+                        style="color: var(--accent-gold); text-decoration: none;">Creava Solution crevasolution.in</a>
+                </p>
             </div>
         </div>
     </footer>
 
     <script type="module" src="/main.js"></script>
-    <script>
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const galleryItems = document.querySelectorAll('.gallery-item');
+    <script type="module">
+        import { supabase } from '/main.js';
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        async function loadGalleryImages() {
+            try {
+                const galleryGrid = document.querySelector('.gallery-grid');
 
-                const filter = btn.getAttribute('data-filter');
+                // Fetch from Supabase
+                const { data, error } = await supabase
+                    .from('gallery')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                galleryItems.forEach(item => {
-                    if (filter === 'all' || item.classList.contains(filter)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
+                if (error) {
+                    throw error;
+                }
+
+                if (data && data.length > 0) {
+                    // Clear static placeholders
+                    galleryGrid.innerHTML = '';
+
+                    // Populate with dynamic data
+                    data.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        const categoryClass = item.category ? item.category.toLowerCase() : 'bridal';
+                        itemDiv.className = `gallery-item ${categoryClass}`;
+
+                        itemDiv.innerHTML = `
+                            <img src="${item.image_url}" alt="${item.category} Mehndi" loading="lazy" />
+                            <div class="gallery-overlay"><span class="gallery-icon">+</span></div>
+                        `;
+                        galleryGrid.appendChild(itemDiv);
+                    });
+                }
+
+                // Re-bind filter buttons after adding dynamic items
+                bindFilters();
+
+            } catch (err) {
+                console.error('Error loading gallery images:', err);
+                // Keep static images on error as fallback, just bind filters
+                bindFilters();
+            }
+        }
+
+        function bindFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            // Re-query gallery items as they might have been dynamically replaced
+            const galleryItems = document.querySelectorAll('.gallery-item');
+
+            filterBtns.forEach(btn => {
+                // Avoid binding multiple times if already bound, though bindFilters is only called once.
+                btn.addEventListener('click', () => {
+                    // Remove active class
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filter = btn.getAttribute('data-filter');
+
+                    galleryItems.forEach(item => {
+                        if (filter === 'all' || item.classList.contains(filter)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
                 });
             });
-        });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadGalleryImages);
+        // Call immediately if DOM is already loaded
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            loadGalleryImages();
+        }
     </script>
 </body>
 

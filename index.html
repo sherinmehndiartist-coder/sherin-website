@@ -301,7 +301,7 @@
           <a href="/booking.html" class="btn btn-primary" style="margin-bottom: 2.5rem; display: inline-block;">Book
             Now</a>
           <div class="social-wrapper">
-            <a href="https://www.instagram.com/sherin_mehandhi_artist?igsh=aGowbGU4Z2wxb3d0" class="social-icon" aria-label="Instagram">
+            <a href="#" class="social-icon" aria-label="Instagram">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -313,7 +313,9 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 Sherin Mehndi Artist. All Rights Reserved.</p>
+        <p>&copy; 2026 Sherin Mehndi Artist. All Rights Reserved. | Designed by <a href="https://crevasolution.in"
+            target="_blank" style="color: var(--accent-gold); text-decoration: none;">Creava Solution
+            crevasolution.in</a></p>
       </div>
     </div>
   </footer>
@@ -326,12 +328,63 @@
     </svg>
   </a>
 
-  <!-- Scripts -->
   <script type="module" src="/main.js"></script>
   <script type="module">
     import { supabase } from '/main.js';
 
     async function loadHomeContent() {
+      // Load hero images
+      try {
+        const { data: heroImgs, error: heroErr } = await supabase
+          .from('hero_images')
+          .select('image_url')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (!heroErr && heroImgs && heroImgs.length > 0) {
+          const heroBg = document.querySelector('.hero-bg');
+          if (heroBg) {
+            heroBg.style.animation = 'none'; // Clear previous
+
+            if (heroImgs.length === 1) {
+              heroBg.style.backgroundImage = `url('${heroImgs[0].image_url}')`;
+            } else {
+              // Create dynamic keyframes for multiple images
+              let styleEl = document.getElementById('dynamic-hero-style');
+              if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'dynamic-hero-style';
+                document.head.appendChild(styleEl);
+              }
+
+              let keyframes = '';
+              if (heroImgs.length === 2) {
+                keyframes = `
+                  @keyframes dynamicHeroSlideshow {
+                    0%, 45% { background-image: url('${heroImgs[0].image_url}'); }
+                    50%, 95% { background-image: url('${heroImgs[1].image_url}'); }
+                    100% { background-image: url('${heroImgs[0].image_url}'); }
+                  }
+                `;
+              } else if (heroImgs.length >= 3) {
+                keyframes = `
+                  @keyframes dynamicHeroSlideshow {
+                    0%, 28% { background-image: url('${heroImgs[0].image_url}'); }
+                    33%, 61% { background-image: url('${heroImgs[1].image_url}'); }
+                    66%, 95% { background-image: url('${heroImgs[2].image_url}'); }
+                    100% { background-image: url('${heroImgs[0].image_url}'); }
+                  }
+                `;
+              }
+              styleEl.innerHTML = keyframes;
+              heroBg.style.animation = 'dynamicHeroSlideshow 15s infinite';
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Hero image fetch fail:", e);
+      }
+
       // Load max 3 products
       try {
         const { data: prods, error: prodErr } = await supabase.from('products').select('*').limit(3).order('created_at', { ascending: false });
